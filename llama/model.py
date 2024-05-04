@@ -15,13 +15,19 @@ from fairscale.nn.model_parallel.layers import (
 )
 from torch import nn
 
-
+#dataclass 데코레이터는 class의 init이나 repr 생성을 단순화 해줍니다.
+#원래라면 
+# class ModelArgs:
+#     def __init__(self, dim: int = 4096, n_layers:int = 32, ...):
+#         self.dim = dim
+#         self.n_layers = n_layers
+#으로 작성해야하는 것을 아래처럼 쉽게 작성할 수 있습니다.
 @dataclass
 class ModelArgs:
     dim: int = 4096
     n_layers: int = 32
     n_heads: int = 32
-    n_kv_heads: Optional[int] = None
+    n_kv_heads: Optional[int] = None # Optional은 None or type을 의미합니다. 기본값이 None일 때 자주 사용합니다.
     vocab_size: int = -1
     multiple_of: int = 256  # make SwiGLU hidden layer size multiple of large power of 2
     ffn_dim_multiplier: Optional[float] = None
@@ -31,7 +37,7 @@ class ModelArgs:
     max_batch_size: int = 32
     max_seq_len: int = 2048
 
-
+#RMSNorm은 Root Mean Squre Normalization을 의미합니다.
 class RMSNorm(torch.nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
         super().__init__()
@@ -39,6 +45,10 @@ class RMSNorm(torch.nn.Module):
         self.weight = nn.Parameter(torch.ones(dim))
 
     def _norm(self, x):
+        '''
+        RMS Normalization을 계산하는 함수입니다.
+        torch.rsqrt(x)는 return 값으로 1/ root(x)를 반환합니다.
+        '''
         return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
 
     def forward(self, x):
