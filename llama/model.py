@@ -15,13 +15,8 @@ from fairscale.nn.model_parallel.layers import (
 )
 from torch import nn
 
-#dataclass 데코레이터는 class의 init이나 repr 생성을 단순화 해줍니다.
-#원래라면 
-# class ModelArgs:
-#     def __init__(self, dim: int = 4096, n_layers:int = 32, ...):
-#         self.dim = dim
-#         self.n_layers = n_layers
-#으로 작성해야하는 것을 아래처럼 쉽게 작성할 수 있습니다.
+# dataclass & typing 설명
+# https://github.com/yunhaeng/llama3/blob/main/explanations/dataclass.ipynb
 @dataclass
 class ModelArgs:
     dim: int = 4096
@@ -37,7 +32,8 @@ class ModelArgs:
     max_batch_size: int = 32
     max_seq_len: int = 2048
 
-#RMSNorm은 Root Mean Squre Normalization을 의미합니다.
+# RMSNorm 설명
+# https://github.com/yunhaeng/llama3/blob/main/explanations/RMSNorm.ipynb
 class RMSNorm(torch.nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
         super().__init__()
@@ -45,10 +41,6 @@ class RMSNorm(torch.nn.Module):
         self.weight = nn.Parameter(torch.ones(dim))
 
     def _norm(self, x):
-        '''
-        RMS Normalization을 계산하는 함수입니다.
-        torch.rsqrt(x)는 return 값으로 1/ root(x)를 반환합니다.
-        '''
         return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
 
     def forward(self, x):
