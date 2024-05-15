@@ -89,7 +89,7 @@ def repeat_kv(x: torch.Tensor, n_rep: int) -> torch.Tensor:
         .reshape(bs, slen, n_kv_heads * n_rep, head_dim)
     )
 
-
+#Attention 층
 class Attention(nn.Module):
     def __init__(self, args: ModelArgs):
         super().__init__()
@@ -192,7 +192,7 @@ class Attention(nn.Module):
         output = output.transpose(1, 2).contiguous().view(bsz, seqlen, -1)
         return self.wo(output)
 
-
+#순전파 층
 class FeedForward(nn.Module):
     def __init__(
         self,
